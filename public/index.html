@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <style>
+            button{
+                width: 200px;
+                height: 50px;
+            }
+        </style>
+        <div>
+            <h1 id ="currentSong"></h1>
+        </div>
+        <div>
+            <h2 id ="artist"></h2>
+        </div>
+        <div class = "control">
+        <div>
+            <button id="togglePlay"></button>
+            <h2 id = "progress"></h2>
+        </div>
+        <div>
+            <button id="backward">&lt;-</button>
+            <button id="forward">-&gt;</button>
+        </div>
+
+        <div>
+            <button id="seekToButton" onclick = "seekTo()">Play At</button>
+            <input type = "text" placeholder ="enter timestamp to play at" id="seekToTime"/> 
+        </div>
+        </div>
+        <script src="authorize.js" async defer></script>
+        <script src="controller.js" async defer></script> 
+    </body>
+</html>
