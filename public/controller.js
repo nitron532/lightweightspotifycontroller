@@ -72,6 +72,23 @@ async function pause(){
         }
     })
 }
+async function seek(milliseconds){
+    const seekResponse = await fetch(apiURL + `me/player/seek?position_ms=${milliseconds}`,{
+        method:"PUT",
+        headers:{
+            "Authorization": "Bearer " + urlToken
+        }
+    })
+    if(seekResponse.status === 404){
+        playbackState();
+    }
+    else{
+        const state = playbackState();
+        if(state === "Paused"){
+            play();
+        }
+    }
+}
 togglePlay.onclick = async function(){
     if(this.textContent === "Resume"){
         play();
@@ -103,22 +120,13 @@ async function seekTo(){
     let minutes = parseInt(timeStamp.substring(0, timeStamp.indexOf(":"))) * 60 * 1000; // Minutes
     let seconds = parseInt(timeStamp.substring(timeStamp.indexOf(":") + 1)) * 1000;     // Seconds
     let milliseconds = (minutes + seconds).toString();
-
-    const seekResponse = await fetch(apiURL + `me/player/seek?position_ms=${milliseconds}`,{
-        method:"PUT",
-        headers:{
-            "Authorization": "Bearer " + urlToken
-        }
-    })
-    if(seekResponse.status === 404){
-        playbackState();
-    }
-    else{
-        const state = playbackState();
-        if(state === "Paused"){
-            play();
-        }
-    }
+    seek(milliseconds);
+}
+async function countIn(){
+    await pause();
+    setTimeout(()=>{
+        seek(0);
+    },3000)
 }
 setInterval(playbackState, 1000);
 
