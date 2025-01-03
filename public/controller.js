@@ -7,7 +7,8 @@ let currentSong = document.getElementById("currentSong");
 let togglePlay = document.getElementById("togglePlay");
 let progress = document.getElementById("progress");
 let artist = document.getElementById("artist");
-
+let countdown = document.getElementById("countdown");
+let currentState;
 //this should frequently run to get playback state
 async function playbackState(){ 
         let getPlayBack = await fetch(apiURL + "me/player", {
@@ -43,17 +44,17 @@ async function playbackState(){
                 progress.textContent = minutes.toString() + " : " + seconds;
                 if(playback.is_playing){
                     togglePlay.textContent = "Pause";
-                    return "Playing";
+                    currentState = "Playing";
                 }
                 else{
                     togglePlay.textContent = "Resume";
-                    return "Paused";
+                    currentState = "Paused";
                 }
 
             }
         }
 }
-playbackState();
+currentState = playbackState();
 async function play(){
     await fetch(apiURL +"me/player/play", {
         method: "PUT",
@@ -83,8 +84,7 @@ async function seek(milliseconds){
         playbackState();
     }
     else{
-        const state = playbackState();
-        if(state === "Paused"){
+        if(currentState === "Paused"){
             play();
         }
     }
@@ -123,10 +123,21 @@ async function seekTo(){
     seek(milliseconds);
 }
 async function countIn(){
-    await pause();
-    setTimeout(()=>{
+    let sec = 2;
+    if(currentState === "Playing"){
+        await pause();
+    }
+    setTimeout(async ()=>{
         seek(0);
-    },3000)
+    },2000) //button says 3 seconds but set at 2 to account for delay in communication with spotify
+    let id = setInterval(function(){
+        countdown.textContent = sec;
+        sec--;
+    },1000);
+    setTimeout(() =>{
+        countdown.textContent = "";
+        clearInterval(id);
+    },3000);
 }
 setInterval(playbackState, 1000);
 
