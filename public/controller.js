@@ -9,7 +9,42 @@ let progress = document.getElementById("progress");
 let artist = document.getElementById("artist");
 let countdown = document.getElementById("countdown");
 let currentState;
-//this should frequently run to get playback state
+let currentPlayingSong;
+let nextSong;
+let queueDropdown = document.getElementById("queue-content");
+let firstRun = true;
+
+async function getQueue(){ //current queue functionality only works if you let spotify run onto the next track and or skip to next track
+    //need to add handling for skipping backwards, podcast episodes also break it
+    if(currentPlayingSong === nextSong){
+        let queueResponse = await fetch(apiURL+"me/player/queue",{
+            method:"GET",
+            headers:{
+                "Authorization": "Bearer " + urlToken
+            }
+        })
+        const queueLog = await queueResponse.json();
+        console.log(queueLog);
+        nextSong = queueLog.queue[0].name;
+        if(firstRun){
+            for(let i = 0; i < 10; i++){
+                let track = document.createElement("a");
+                let trackName = document.createTextNode(queueLog.queue[i].name);
+                track.appendChild(trackName);
+                queueDropdown.appendChild(track);
+            }
+            firstRun = false;
+        }
+        else{
+            queueDropdown.removeChild(queueDropdown.firstElementChild);
+            let track = document.createElement("a");
+            let trackName = document.createTextNode(queueLog.queue[9].name);
+            track.appendChild(trackName);
+            queueDropdown.appendChild(track);
+        }
+    }
+}
+
 async function playbackState(){ 
         let getPlayBack = await fetch(apiURL + "me/player", {
         method: "GET",
@@ -30,8 +65,9 @@ async function playbackState(){
                     element.style.visibility = "visible";
                 })
                 const playback = await getPlayBack.json();
-                console.log(playback);
-                currentSong.textContent = "Current Song: " + playback.item.name;
+                //console.log(playback);
+                currentPlayingSong = playback.item.name;
+                currentSong.textContent = "Current Song: " + currentPlayingSong;
                 artist.textContent = playback.item.artists[0].name;
                 let minutes = Math.trunc((playback.progress_ms/1000) / 60);
                 let seconds = Math.trunc((playback.progress_ms/1000) % 60);
@@ -55,6 +91,8 @@ async function playbackState(){
         }
 }
 currentState = playbackState();
+nextSong = currentPlayingSong; //guarantees first call to getQueue will execute if statement
+getQueue();
 async function play(){
     await fetch(apiURL +"me/player/play", {
         method: "PUT",
@@ -139,5 +177,13 @@ async function countIn(){
         clearInterval(id);
     },3000);
 }
-setInterval(playbackState, 1000);
+
+
+
+setInterval(()=>{
+    playbackState();
+    getQueue();
+    // console.log(nextSong);
+    // console.log(currentPlayingSong);
+}, 1000);
 

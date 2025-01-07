@@ -13,13 +13,31 @@
                 width: 200px;
                 height: 50px;
             }
+            .queue{
+                position: relative;
+                display: inline-block;
+            }
+            #queue-content {
+                display: none;
+                position: absolute;
+                background-color: #f1f1f1;
+                min-width: 160px;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                z-index: 1;
+            }
+            #queue-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+            .queue:hover .queueButton {background-color: #3e8e41;}
+            .queue:hover #queue-content {display: block;}
+            #queue-content a:hover{background-color: #3e8e41;}
         </style>
         <div>
             <h1 id ="currentSong"></h1>
         </div>
-        <!-- <div>
-            <h2 id ="artist"></h2>
-        </div> -->
         <div class = "control">
         <div>
             <h2 id ="artist"></h2>
@@ -34,11 +52,18 @@
             <button id="backward">&lt;-</button>
             <button id="forward">-&gt;</button>
         </div>
-
+        <br>
         <div>
             <button id="seekToButton" onclick = "seekTo()">Play At</button>
             <input type = "text" placeholder ="enter timestamp to play at" id="seekToTime"/> 
         </div>
+        <br>
+        <div onmouseover = "getQueue()" class="queue">
+            <button class="queueButton">Queue</button>
+            <div id="queue-content">
+                <!--js loop thru queue add elements to this, click one, play that one, add other queue items back to queue-->
+            </div>
+          </div>
         </div>
         <script src="authorize.js" async defer></script>
         <script src="controller.js" async defer></script> 
