@@ -11,10 +11,10 @@ let countdown = document.getElementById("countdown");
 let currentState;
 let currentPlayingSong;
 let nextSong;
-let queueDropdown = document.getElementById("queue-content");
+//et queueDropdown = document.getElementById("queue-content");
 let firstRun = true;
 
-async function getQueue(){ //current queue functionality only works if you let spotify run onto the next track and or skip to next track
+/*async function getQueue(){ //current queue functionality only works if you let spotify run onto the next track and or skip to next track
     //need to add handling for skipping backwards, podcast episodes also break it
     if(currentPlayingSong === nextSong){
         let queueResponse = await fetch(apiURL+"me/player/queue",{
@@ -44,6 +44,7 @@ async function getQueue(){ //current queue functionality only works if you let s
         }
     }
 }
+    */
 
 async function playbackState(){ 
         let getPlayBack = await fetch(apiURL + "me/player", {
@@ -65,12 +66,13 @@ async function playbackState(){
                     element.style.visibility = "visible";
                 })
                 const playback = await getPlayBack.json();
-                //console.log(playback);
+                console.log(playback);
                 currentPlayingSong = playback.item.name;
                 currentSong.textContent = "Current Song: " + currentPlayingSong;
                 artist.textContent = playback.item.artists[0].name;
                 let minutes = Math.trunc((playback.progress_ms/1000) / 60);
                 let seconds = Math.trunc((playback.progress_ms/1000) % 60);
+                document.getElementById("albumCover").src = playback.item.album.images[0].url
                 if(seconds < 10){
                     seconds = "0"+seconds.toString();
                 }
@@ -92,7 +94,7 @@ async function playbackState(){
 }
 currentState = playbackState();
 nextSong = currentPlayingSong; //guarantees first call to getQueue will execute if statement
-getQueue();
+//getQueue();
 async function play(){
     await fetch(apiURL +"me/player/play", {
         method: "PUT",
@@ -182,7 +184,7 @@ async function countIn(){
 
 setInterval(()=>{
     playbackState();
-    getQueue();
+    // getQueue();
     // console.log(nextSong);
     // console.log(currentPlayingSong);
 }, 1000);
